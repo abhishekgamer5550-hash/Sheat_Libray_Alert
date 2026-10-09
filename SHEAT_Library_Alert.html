@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHEAT Library Alert</title>
+<meta name="theme-color" content="#153a9e">
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<style>
+:root{--navy:#10213d;--blue:#2857e6;--blue2:#4776ff;--bg:#f4f7fb;--card:#fff;--line:#dce5ef;--muted:#66758b;--green:#0b8f68;--orange:#d97a00;--red:#d94242}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#edf3ff 0,#f7faff 360px,#f4f7fb 100%);color:var(--navy)}
+button,input,select{font:inherit}button{cursor:pointer}
+.header{position:sticky;top:0;z-index:30;background:#ffffffed;backdrop-filter:blur(15px);border-bottom:1px solid var(--line)}
+.nav{max-width:1180px;margin:auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#153a9e,#4776ff);display:grid;place-items:center;color:white;font-size:23px;box-shadow:0 8px 20px #2857e62b}.brand b{font-size:17px}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.navBtns{display:flex;gap:7px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:10px 13px;font-weight:800;transition:.15s}.btn:hover{transform:translateY(-1px)}.primary{background:var(--blue);color:white}.dark{background:var(--navy);color:white}.ghost{background:white;color:var(--navy);border:1px solid var(--line)}.danger{background:#fff0f0;color:#b82f2f;border:1px solid #ffd0d0}
+.hero{max-width:1180px;margin:24px auto 16px;padding:0 16px}.heroBox{border-radius:27px;padding:31px;background:linear-gradient(135deg,#10213d,#214fc8);color:white;box-shadow:0 22px 60px #10213d22}.badge{display:inline-block;padding:7px 10px;border-radius:99px;background:#ffffff18;border:1px solid #ffffff30;font-size:11px;font-weight:900}.hero h1{font-size:clamp(32px,6vw,58px);line-height:1;margin:15px 0 10px}.hero p{max-width:720px;color:#dce7ff;line-height:1.55}.heroBtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.stats{max-width:1180px;margin:auto;padding:0 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:0 7px 22px #10213d08}.stat b{font-size:25px}.stat span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.main{max-width:1180px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:1.55fr .8fr;gap:16px}.panel{background:white;border:1px solid var(--line);border-radius:21px;padding:18px;box-shadow:0 8px 28px #10213d08}.panel h2,.panel h3{margin:0 0 5px}.sub{color:var(--muted);font-size:12px;margin:0 0 15px}
+.search{display:flex;gap:8px;margin-bottom:12px}.input{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 12px;outline:none;background:white}.input:focus{border-color:#7d9cff;box-shadow:0 0 0 3px #2857e614}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.chip{background:white;border:1px solid var(--line);border-radius:99px;padding:7px 10px;font-size:11px;font-weight:800}.chip.active{background:#eaf0ff;border-color:#b8c9ff;color:#214fc8}
+.bookGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.book{border:1px solid var(--line);border-radius:17px;padding:13px;background:linear-gradient(180deg,#fff,#fbfdff)}.bookTop{display:flex;justify-content:space-between;gap:7px}.cover{width:45px;height:53px;border-radius:10px;background:#edf2ff;display:grid;place-items:center;font-size:22px}.status{font-size:10px;font-weight:900;padding:5px 8px;border-radius:99px;height:max-content}.available{background:#e3f7ef;color:#087b59}.upcoming{background:#fff0d7;color:#a35b00}.book h4{font-size:15px;margin:9px 0 4px}.book p{font-size:11px;color:var(--muted);margin:3px 0}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.sm{padding:8px 9px;font-size:10px;border-radius:9px}
+.featureGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.feature{border:1px solid var(--line);border-radius:14px;padding:11px}.feature b{display:block;font-size:12px}.feature span{font-size:10px;color:var(--muted);line-height:1.4}
+.notice{border:1px solid var(--line);border-radius:13px;padding:10px;margin:7px 0;background:#fbfdff}.notice b{font-size:12px}.notice small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.empty{text-align:center;color:var(--muted);padding:24px 8px;font-size:12px}
+.footer{text-align:center;color:var(--muted);font-size:11px;padding:25px 15px 50px}.modal{display:none;position:fixed;inset:0;background:#07132f88;z-index:80;align-items:center;justify-content:center;padding:15px}.modal.open{display:flex}.modalBox{width:min(560px,100%);max-height:92vh;overflow:auto;background:white;border-radius:21px;padding:20px;position:relative}.close{position:absolute;right:12px;top:11px;border:0;background:#edf1f6;border-radius:10px;width:34px;height:34px;font-size:20px}.field{display:block;font-size:11px;font-weight:900;margin:10px 0}.field .input,.field select{margin-top:5px}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dashStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fbfdff}.metric b{font-size:21px;display:block}.metric span{font-size:9px;color:var(--muted)}.divider{height:1px;background:var(--line);margin:15px 0}.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;z-index:120;background:#10213d;color:#fff;border-radius:11px;padding:11px 15px;font-size:12px;font-weight:800;transition:.2s;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+.connection{font-size:10px;margin-top:9px;text-align:center}.online{color:var(--green)}.offline{color:var(--orange)}
+@media(max-width:850px){.main{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.bookGrid{grid-template-columns:1fr}.two{grid-template-columns:1fr}.dashStats{grid-template-columns:repeat(2,1fr)}.nav{align-items:flex-start}.navBtns{justify-content:flex-end}.brand b{font-size:15px}.heroBox{padding:25px 20px}}
+</style>
+</head>
+<body>
+<header class="header"><div class="nav">
+  <div class="brand"><div class="logo">📚</div><div><b>SHEAT Library Alert</b><small>SHEAT Group of Institutes · Team LibTech</small></div></div>
+  <div class="navBtns"><button class="btn ghost" onclick="openAlerts()">🔔 Alerts <span id="alertBadge">0</span></button><button class="btn dark" onclick="openStaff()">👨‍💼 Library Staff</button></div>
+</div></header>
+
+<section class="hero"><div class="heroBox">
+  <span class="badge">HACKATHON MVP · 2-MEMBER TEAM</span>
+  <h1>Know before you go.</h1>
+  <p>Check library availability, track upcoming books, request titles and get alerts — while library staff manage everything from one simple dashboard.</p>
+  <div class="heroBtns"><button class="btn" style="background:#fff;color:#1742ae" onclick="document.getElementById('library').scrollIntoView()">📚 Explore Library</button><button class="btn" style="background:#ffffff18;color:#fff;border:1px solid #ffffff44" onclick="openAlerts()">🔔 My Alerts</button></div>
+</div></section>
+
+<section class="stats">
+  <div class="stat"><b id="totalBooks">0</b><span>Total books</span></div>
+  <div class="stat"><b id="availableBooks">0</b><span>Available now</span></div>
+  <div class="stat"><b id="upcomingBooks">0</b><span>Coming soon</span></div>
+  <div class="stat"><b id="requestCount">0</b><span>Pending requests</span></div>
+</section>
+
+<main class="main" id="library">
+<section class="panel">
+  <h2>📚 Smart Book Shelf</h2><p class="sub">Search a title, author or category. Notify yourself when a book becomes available.</p>
+  <div class="search"><input class="input" id="search" placeholder="Search books, authors, categories..." oninput="renderBooks()"><button class="btn primary" onclick="renderBooks()">Search</button></div>
+  <div class="filters"><button class="chip active" onclick="setFilter('all',this)">All</button><button class="chip" onclick="setFilter('available',this)">Available</button><button class="chip" onclick="setFilter('upcoming',this)">Coming Soon</button></div>
+  <div class="bookGrid" id="books"></div>
+</section>
+
+<aside class="panel">
+  <h3>✨ Hackathon Features</h3><p class="sub">Built around a real student + staff workflow.</p>
+  <div class="featureGrid">
+    <div class="feature"><b>🔔 Smart Alerts</b><span>Students subscribe to a book alert.</span></div>
+    <div class="feature"><b>📝 Requests</b><span>Demand reaches library staff.</span></div>
+    <div class="feature"><b>📅 Arrival Tracking</b><span>Show expected arrival dates.</span></div>
+    <div class="feature"><b>📊 Staff Analytics</b><span>See demand and pending work.</span></div>
+    <div class="feature"><b>📱 Mobile First</b><span>Made for students on phones.</span></div>
+  </div>
+  <div class="divider"></div>
+  <h3>📢 Quick Guide</h3>
+  <div class="notice"><b>Need a book?</b><small>Search → check status → Notify Me or Request.</small></div>
+  <div class="notice"><b>Library staff?</b><small>Open Library Staff → password → manage alerts and requests.</small></div>
+  <div class="connection" id="connection">Checking cloud connection...</div>
+</aside>
+</main>
+
+<div class="footer">SHEAT Library Alert · Team LibTech · Smart Digital Library MVP</div>
+
+<!-- Alert modal -->
+<div class="modal" id="alertModal"><div class="modalBox"><button class="close" onclick="closeModal('alertModal')">×</button>
+<h2>🔔 Notify Me</h2><p class="sub" id="alertBook"></p>
+<label class="field">Student name<input class="input" id="alertName" placeholder="Enter your name"></label>
+<label class="field">Email<input class="input" id="alertEmail" type="email" placeholder="name@college.edu"></label>
+<button class="btn primary" style="width:100%" onclick="submitAlert()">Create Alert</button>
+</div></div>
+
+<!-- Request modal -->
+<div class="modal" id="requestModal"><div class="modalBox"><button class="close" onclick="closeModal('requestModal')">×</button>
+<h2>📝 Request This Book</h2><p class="sub" id="requestBook"></p>
+<label class="field">Student name<input class="input" id="requestName" placeholder="Enter your name"></label>
+<label class="field">Email<input class="input" id="requestEmail" type="email" placeholder="name@college.edu"></label>
+<label class="field">Why do you need it?<select class="input" id="requestReason"><option>Assignment</option><option>Project</option><option>Exam</option><option>Research</option><option>Other</option></select></label>
+<button class="btn primary" style="width:100%" onclick="submitRequest()">Send Request</button>
+</div></div>
+
+<!-- My alerts -->
+<div class="modal" id="alertsModal"><div class="modalBox"><button class="close" onclick="closeModal('alertsModal')">×</button>
+<h2>🔔 Student Alerts</h2><p class="sub">Your saved notification subscriptions.</p><div id="myAlerts"></div>
+</div></div>
+
+<!-- Staff -->
+<div class="modal" id="staffModal"><div class="modalBox"><button class="close" onclick="closeModal('staffModal')">×</button>
+<div id="staffLogin">
+<h2>👨‍💼 Library Staff</h2><p class="sub">Demo dashboard for hackathon presentation.</p>
+<label class="field">Staff password<input class="input" id="staffPassword" type="password" placeholder="Enter password"></label>
+<button class="btn dark" style="width:100%" onclick="loginStaff()">Open Dashboard</button>
+<p class="sub" style="margin-top:10px">Demo password: <b>sheat123</b></p>
+</div>
+<div id="staffDashboard" style="display:none">
+<h2>📊 Library Staff Dashboard</h2><p class="sub">Manage books, student alerts and requests.</p>
+<div class="dashStats"><div class="metric"><b id="dTotal">0</b><span>Total books</span></div><div class="metric"><b id="dAvailable">0</b><span>Available</span></div><div class="metric"><b id="dAlerts">0</b><span>Student alerts</span></div><div class="metric"><b id="dRequests">0</b><span>Requests</span></div></div>
+<div class="divider"></div>
+<button class="btn primary" onclick="openAddBook()">➕ Add Book</button>
+<button class="btn ghost" onclick="clearDemoData()">Reset demo data</button>
+<h3 style="margin-top:17px">🔔 Student Alerts</h3><div id="staffAlerts"></div>
+<h3 style="margin-top:17px">📝 Requests</h3><div id="staffRequests"></div>
+<h3 style="margin-top:17px">📚 Books</h3><div id="staffBooks"></div>
+</div></div></div>
+
+<!-- Add book -->
+<div class="modal" id="addBookModal"><div class="modalBox"><button class="close" onclick="closeModal('addBookModal')">×</button>
+<h2>➕ Add Book</h2>
+<div class="two"><label class="field">Book title<input class="input" id="newTitle"></label><label class="field">Author<input class="input" id="newAuthor"></label></div>
+<div class="two"><label class="field">Category<input class="input" id="newCategory"></label><label class="field">Status<select class="input" id="newStatus"><option value="available">Available</option><option value="upcoming">Coming Soon</option></select></label></div>
+<label class="field">Expected arrival<input class="input" id="newArrival" placeholder="e.g. 15 Oct 2026"></label>
+<button class="btn primary" style="width:100%" onclick="addBook()">Add Book</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FIREBASE_CONFIG = {"apiKey": "AIzaSyDjk-ozAnNy-HBFtAULZ0Yg_ungjVY1LoY", "authDomain": "sheat-library-alert.firebaseapp.com", "projectId": "sheat-library-alert", "storageBucket": "sheat-library-alert.firebasestorage.app", "messagingSenderId": "648425571828", "appId": "1:648425571828:web:01a3198a0fe259cdf525a1", "measurementId": "G-3T7B4BP5V6"};
+let db=null, cloud=false;
+try{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.firestore();
+  cloud=true;
+}catch(e){cloud=false;}
+
+const seedBooks=[
+{id:"b1",title:"Data Structures and Algorithms",author:"Narasimha Karumanchi",category:"Computer Science",status:"available",detail:"Shelf A · 3 copies",icon:"💻"},
+{id:"b2",title:"Computer Networking: A Top-Down Approach",author:"Kurose & Ross",category:"Computer Science",status:"upcoming",detail:"Order placed",arrival:"15 Oct 2026",icon:"🌐"},
+{id:"b3",title:"The Pragmatic Programmer",author:"Andrew Hunt & David Thomas",category:"Programming",status:"available",detail:"Shelf B · 2 copies",icon:"💡"},
+{id:"b4",title:"Python Crash Course",author:"Eric Matthes",category:"Programming",status:"available",detail:"Shelf B · 4 copies",icon:"🐍"},
+{id:"b5",title:"Artificial Intelligence: A Modern Approach",author:"Russell & Norvig",category:"AI & ML",status:"upcoming",detail:"Order planned",arrival:"20 Oct 2026",icon:"🤖"},
+{id:"b6",title:"Database System Concepts",author:"Silberschatz & Korth",category:"Database",status:"available",detail:"Shelf C · 2 copies",icon:"🗄️"}
+];
+
+let books=JSON.parse(localStorage.getItem("sheat_books")||"null")||seedBooks;
+let alerts=JSON.parse(localStorage.getItem("sheat_alerts")||"[]");
+let requests=JSON.parse(localStorage.getItem("sheat_requests")||"[]");
+let filter="all", selectedBook=null;
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+function toast(msg){let t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400)}
+function openModal(id){$(id).classList.add("open")}
+function closeModal(id){$(id).classList.remove("open")}
+function saveAll(){
+  localStorage.setItem("sheat_books",JSON.stringify(books));
+  localStorage.setItem("sheat_alerts",JSON.stringify(alerts));
+  localStorage.setItem("sheat_requests",JSON.stringify(requests));
+  updateStats();
+}
+function updateStats(){
+  $("totalBooks").textContent=books.length;
+  $("availableBooks").textContent=books.filter(b=>b.status==="available").length;
+  $("upcomingBooks").textContent=books.filter(b=>b.status==="upcoming").length;
+  $("requestCount").textContent=requests.filter(r=>r.status!=="done").length;
+  $("alertBadge").textContent=alerts.length;
+}
+function setFilter(f,el){
+  filter=f;
+  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("active"));
+  el.classList.add("active");
+  renderBooks();
+}
+function renderBooks(){
+  const q=$("search").value.toLowerCase().trim();
+  const list=books.filter(b=>
+    (filter==="all"||b.status===filter) &&
+    (b.title+" "+b.author+" "+b.category).toLowerCase().includes(q)
+  );
+  $("books").innerHTML=list.length?list.map(b=>`
+    <article class="book">
+      <div class="bookTop"><div class="cover">${b.icon||"📚"}</div><span class="status ${b.status}">${b.status==="available"?"AVAILABLE":"COMING SOON"}</span></div>
+      <h4>${esc(b.title)}</h4><p>✍️ ${esc(b.author)}</p><p>🏷️ ${esc(b.category)}</p><p>${esc(b.detail||"")}</p>
+      ${b.arrival?`<p>📅 Expected: <b>${esc(b.arrival)}</b></p>`:""}
+      <div class="actions">
+        ${b.status==="upcoming"?(alerts.some(a=>a.bookId===b.id)?`<button class="btn ghost sm" disabled>✓ Alert Saved</button>`:`<button class="btn primary sm" onclick="openAlertForm('${b.id}')">🔔 Notify Me</button>`):""}
+        ${b.status==="upcoming"?`<button class="btn ghost sm" onclick="openRequestForm('${b.id}')">📝 Request</button>`:""}
+      </div>
+    </article>`).join(""):`<div class="empty">No books found. Try another search.</div>`;
+  updateStats();
+}
+function openAlertForm(id){
+  selectedBook=books.find(b=>b.id===id);
+  $("alertBook").textContent="Book: "+selectedBook.title;
+  $("alertName").value="";$("alertEmail").value="";
+  openModal("alertModal");
+}
+async function submitAlert(){
+  const name=$("alertName").value.trim(),email=$("alertEmail").value.trim();
+  if(!name||!email)return toast("Please enter name and email.");
+  const alreadySaved=alerts.some(a=>a.bookId===selectedBook.id && a.email.trim().toLowerCase()===email.toLowerCase());
+  if(alreadySaved){closeModal("alertModal");toast("You already have an alert for this book with this email.");return;}
+  const data={bookId:selectedBook.id,book:selectedBook.title,name,email,createdAt:new Date().toISOString()};
+  alerts.push(data);saveAll();renderBooks();
+  closeModal("alertModal");toast("🔔 Alert created successfully!");
+  if(cloud) db.collection("alerts").add(data).catch(()=>{});
+}
+function openRequestForm(id){
+  selectedBook=books.find(b=>b.id===id);
+  $("requestBook").textContent="Book: "+selectedBook.title;
+  $("requestName").value="";$("requestEmail").value="";
+  openModal("requestModal");
+}
+async function submitRequest(){
+  const name=$("requestName").value.trim(),email=$("requestEmail").value.trim();
+  if(!name||!email)return toast("Please enter name and email.");
+  const data={bookId:selectedBook.id,book:selectedBook.title,name,email,reason:$("requestReason").value,status:"pending",createdAt:new Date().toISOString()};
+  requests.push(data);saveAll();
+  closeModal("requestModal");toast("📝 Request sent to library staff!");
+  if(cloud) db.collection("bookRequests").add(data).catch(()=>{});
+}
+function openAlerts(){
+  $("myAlerts").innerHTML=alerts.length?alerts.slice().reverse().map(a=>`
+    <div class="notice"><b>🔔 ${esc(a.book)}</b><small>${esc(a.name)} · ${esc(a.email)}</small></div>`).join("")
+    :`<div class="empty">No alerts yet. Use Notify Me on a book.</div>`;
+  openModal("alertsModal");
+}
+function openStaff(){
+  $("staffPassword").value="";
+  $("staffLogin").style.display="block";$("staffDashboard").style.display="none";
+  openModal("staffModal");
+}
+function loginStaff(){
+  if($("staffPassword").value!=="sheat123")return toast("Wrong password. Demo password: sheat123");
+  $("staffLogin").style.display="none";$("staffDashboard").style.display="block";renderStaff();
+}
+function renderStaff(){
+  $("dTotal").textContent=books.length;
+  $("dAvailable").textContent=books.filter(b=>b.status==="available").length;
+  $("dAlerts").textContent=alerts.length;
+  $("dRequests").textContent=requests.filter(r=>r.status!=="done").length;
+
+  $("staffAlerts").innerHTML=alerts.length?alerts.slice().reverse().map(a=>`
+    <div class="notice"><b>🔔 ${esc(a.book)}</b><small>Student: ${esc(a.name)} · ${esc(a.email)}</small></div>`
+  ).join(""):`<div class="empty">No student alerts yet.</div>`;
+
+  const pending=requests.filter(r=>r.status!=="done");
+  $("staffRequests").innerHTML=pending.length?pending.slice().reverse().map(r=>`
+    <div class="notice"><b>📝 ${esc(r.book)}</b><small>${esc(r.name)} · ${esc(r.email)} · ${esc(r.reason)}</small>
+    <button class="btn primary sm" style="margin-top:7px" onclick="markDone('${esc(r.createdAt)}')">✓ Mark Done</button></div>`
+  ).join(""):`<div class="empty">No pending requests.</div>`;
+
+  $("staffBooks").innerHTML=books.map(b=>`
+    <div class="notice"><b>${esc(b.title)}</b><small>${esc(b.author)} · ${b.status==="available"?"Available":"Coming Soon"}</small>
+    <button class="btn danger sm" style="margin-top:7px" onclick="deleteBook('${esc(b.id)}')">Delete</button></div>`
+  ).join("");
+}
+function markDone(ts){
+  requests=requests.map(r=>r.createdAt===ts?{...r,status:"done"}:r);
+  saveAll();renderStaff();toast("✓ Request marked done.");
+}
+function deleteBook(id){
+  books=books.filter(b=>b.id!==id);saveAll();renderBooks();renderStaff();toast("Book deleted.");
+}
+function openAddBook(){openModal("addBookModal")}
+function addBook(){
+  const title=$("newTitle").value.trim(),author=$("newAuthor").value.trim(),cat=$("newCategory").value.trim(),status=$("newStatus").value,arrival=$("newArrival").value.trim();
+  if(!title||!author||!cat)return toast("Please fill title, author and category.");
+  const data={id:"b"+Date.now(),title,author,category:cat,status,detail:status==="available"?"Added by staff":"Order planned",arrival,icon:"📚"};
+  books.push(data);saveAll();renderBooks();renderStaff();closeModal("addBookModal");toast("📚 Book added successfully.");
+}
+function clearDemoData(){
+  if(!confirm("Reset books, alerts and requests to demo data?"))return;
+  books=[...seedBooks];alerts=[];requests=[];saveAll();renderBooks();renderStaff();toast("Demo data reset.");
+}
+
+/* Firebase: cloud listeners update the dashboard when Firestore has data.
+   Local data always remains usable for the hackathon demo. */
+if(cloud){
+  $("connection").innerHTML='☁️ <span class="online">Firebase connected</span>';
+  db.collection("alerts").onSnapshot(s=>{
+    if(s.size){alerts=s.docs.map(d=>({id:d.id,...d.data()}));localStorage.setItem("sheat_alerts",JSON.stringify(alerts));updateStats();if($("staffDashboard").style.display!=="none")renderStaff();}
+  },()=>{});
+  db.collection("bookRequests").onSnapshot(s=>{
+    if(s.size){requests=s.docs.map(d=>({id:d.id,...d.data()}));localStorage.setItem("sheat_requests",JSON.stringify(requests));updateStats();if($("staffDashboard").style.display!=="none")renderStaff();}
+  },()=>{});
+}else{
+  $("connection").innerHTML='💾 <span class="offline">Demo mode (local storage)</span>';
+}
+
+updateStats();renderBooks();
+</script>
+</body>
+</html>
